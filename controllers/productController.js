@@ -35,24 +35,19 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) =>{
     try{
-        const { name, description, price, alamat, ruangan, kamarmandi, luastanah,kategoriId,userId,image } = req.body;
-
-        const imageFile = req.files.image;
-
-        const imagePath = 'uploads/' + imageFile.name;
-        imageFile.mv(imagePath);
+        const { name, description, price, addressId, roomId, discount, tipeId,categoryId,userId,image } = req.body;
 
         const newProduct = await Product.create({
             name,
             description,
             price,
-            alamat,
-            ruangan,
-            kamarmandi,
-            luastanah,
-            kategoriId,
+            addressId,
+            roomId,
+            discount,
+            tipeId,
+            categoryId,
             userId,
-            image:imagePath
+            image
         });
         res.status(201).json(newProduct);
     } catch(err){
@@ -64,23 +59,24 @@ const createProduct = async (req, res) =>{
 const editProduct = async (req, res) => {
     try{
         const { id } = req.params;
-        const { name, description, price, alamat, ruangan, kamarmandi, luastanah, kategoriId } = req.body;
+        const { name, description, price, addressId, roomId, discount, tipeId, categoryId, total_price } = req.body;
 
         console.log("Product ID:", id);
         let product = await Product.findByPk(id);
         console.log("Product:", product);
         if (!Product) {
-            return res.status(400).json("produk tidak ditemukan");
+            return res.status(400).json("produk not found");
         }
 
-        if (name) product.name = name;
-        if (description) product.description = description;
-        if (price) product.price = price;
-        if (alamat) product.alamat = alamat;
-        if (ruangan) product.ruangan= ruangan;
-        if (kamarmandi) product.kamarmandi= kamarmandi;
-        if (luastanah) product.luastanah= luastanah;
-        if (kategoriId) product.kategoriId = kategoriId;
+        product.name = name || product.name;
+        product.description = description || product.description;
+        product.price = price || product.price;
+        product.addressId = addressId || product.addressId;
+        product.roomId = roomId || product.roomId;
+        product.discount = ValidateDiscount (discount) ? discount : product.discount;
+        product.tipeId = tipeId || product.tipeId;
+        product.categoryId = categoryId || product.categoryId;
+        product.total_price = calculateTotalPrice(product);
 
         await product.save();
 
@@ -89,6 +85,15 @@ const editProduct = async (req, res) => {
         console.log(err);
         res.status(404).json('error editing product');
     }
+}
+
+const ValidateDiscount =(discount) => {
+    return Number.isInteger(discount) && discount >= 0 && discount <= 100;
+}
+
+const calculateTotalPrice = (product) => {
+    const discountPrice = product.price * ((100 - product.discount) / 100);
+    return discountPrice;
 }
 
 const deleteProduct =async (req, res) => {

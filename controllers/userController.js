@@ -32,7 +32,7 @@ const getUserByToken = async (req, res) => {
 
 const register = async (req, res) => {
     try {
-        const { username, email, password, role, alamat, company_name, companyId, no_telpon } = req.body;
+        const { username, email, password, role, address,image ,company_name, companyId, no_telpon } = req.body;
         const emailDomain = email.split('@')[1];
 
         // Validate email domain
@@ -77,7 +77,8 @@ const register = async (req, res) => {
             email,
             password: hashPassword,
             role,
-            alamat,
+            address,
+            image,
             company_name,
             companyId,
             no_telpon
@@ -91,7 +92,8 @@ const register = async (req, res) => {
                 name: newUser.username,
                 email: newUser.email,
                 role : newUser.role,
-                alamat : newUser.alamat,
+                address : newUser.address,
+                image: newUser.image,
                 company_name: newUser.company_name,
                 companyId: newUser.companyId,
                 telp: newUser.no_telpon
@@ -134,9 +136,9 @@ const login = async (req, res) => {
             id: user.id,
             username: user.username,
             email: user.email,
-            alamat: user.alamat,
+            address: user.address,
             role : user.role,
-            alamat : user.alamat,
+            image : user.image,
             company_name: user.company_name,
             companyId: user.companyId,
             telp: user.no_telpon
@@ -149,31 +151,32 @@ const login = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        const userId = req.user.id; 
-        const { username, email, alamat, company_name, companyId, no_telpon, decription } = req.body;
+        const userId = req.params.id; 
+        const { username, email, address, company_name, companyId, no_telpon, decription } = req.body;
 
-        // Find the user by ID
         const user = await User.findByPk(userId);
 
         if (!user) {
             return res.status(404).json({ error: true, message: 'User not found' });
         }
 
-        // Update user's profile fields if provided
         if (username) {
             user.username = username;
         }
         if (email) {
             user.email = email;
         }
-        if (alamat) {
-            user.alamat = alamat;
+        if (address) {
+            user.address = address;
         }
         if (company_name) {
             user.company_name = company_name;
         }
         if (companyId) {
             user.companyId = companyId;
+        }
+        if (image){
+            user.image = image;
         }
         if (no_telpon) {
             user.no_telpon = no_telpon;

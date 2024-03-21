@@ -5,7 +5,7 @@ const { getUserByToken, register, updateProfile, logout, login } = require('../c
 router.get('/user', getUserByToken);
 router.post('/user/register', register);
 router.post('/user/login', login);
-router.put('/user/profile', updateProfile);
+router.put('/user/profile/:id', updateProfile);
 router.get('/user', logout);
 
 module.exports = router;

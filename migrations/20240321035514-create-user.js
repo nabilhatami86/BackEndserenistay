@@ -14,12 +14,11 @@ module.exports = {
         allowNull: false
       },
       email: {
-        type: Sequelize.STRING,
         unique: true,
         allowNull: false
       },
       password: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       role: {
@@ -27,9 +26,9 @@ module.exports = {
         defaultValue: "user",
         allowNull: false
       },
-      alamat: {
+      address: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
       companyId: {
         type: Sequelize.INTEGER
@@ -41,7 +40,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      decription: {
+      image: {
+        type: Sequelize.STRING
+      },
+      description: {
         type: Sequelize.STRING
       },
       createdAt: {

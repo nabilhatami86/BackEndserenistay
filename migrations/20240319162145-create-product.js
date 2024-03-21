@@ -21,28 +21,32 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      alamat: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      ruangan: {
+      addressId: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      kamarmandi: {
+      roomId: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      luastanah: {
+      tipeId: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      kategoriId: {
+      discount: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      categoryId: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
       userId:{
         type : Sequelize.INTEGER,
+        allowNull: false
+      },
+      total_price:{
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       image:{
