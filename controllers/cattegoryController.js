@@ -1,5 +1,4 @@
 const { Cattegory } = require ('../models')
-const cattegory = require('../models/cattegory')
 
 const getCattegory = async (req, res) => {
     try{
@@ -61,4 +60,9 @@ const deleteCattegory = async(req, res) =>{
     
 }
 
-module.exports={getCattegory, updateCattegory, deleteCattegory, createCattegory};
+module.exports={ 
+    getCattegory, 
+    updateCattegory, 
+    deleteCattegory, 
+    createCattegory 
+};

@@ -141,7 +141,7 @@ const login = async (req, res) => {
             image : user.image,
             company_name: user.company_name,
             companyId: user.companyId,
-            telp: user.no_telpon
+            no_telpon: user.no_telpon
         });
     } catch (error) {
         console.error(error);
@@ -206,5 +206,32 @@ const logout = (req, res) => {
     }
 }
 
+const deleteUser = async (req, res) => {
+    try {
+        const userId = req.params.id;
 
-module.exports = { getUserByToken, register, login, updateProfile, logout };
+        // Cek apakah user yang akan dihapus ditemukan
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ error: true, message: 'User not found' });
+        }
+
+        // Hapus user
+        await User.destroy({ where: { id: userId } });
+
+        // Kirim respons berhasil
+        return res.status(200).json({ error: false, message: 'User deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: true, message: 'Internal Server Error' });
+    }
+}
+
+module.exports = { 
+    getUserByToken, 
+    register, 
+    login, 
+    updateProfile, 
+    logout,
+    deleteUser
+};

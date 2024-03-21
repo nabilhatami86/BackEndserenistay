@@ -1,15 +1,15 @@
 const multer = require ('multer');
-const {Product, Cattegory} = require ('../models')
+const {Product, Cattegory, Tipe} = require ('../models')
 
 const getProduct =  async (req, res) =>{
     try{
         const product = await Product.findAll({
-            include: [{
-                model: Cattegory,
-                attributes: ["name"]
-                
-            }]
+            include: [
+                {model: Cattegory,vattributes: ["name"]},
+                {model: Tipe,vattributes: ["name"]}
+            ]
         });
+        
         res.status(200).json(product);
     }catch(err){
         console.log(err);
@@ -76,7 +76,7 @@ const editProduct = async (req, res) => {
         product.discount = ValidateDiscount (discount) ? discount : product.discount;
         product.tipeId = tipeId || product.tipeId;
         product.categoryId = categoryId || product.categoryId;
-        product.total_price = calculateTotalPrice(product);
+        product.total_price = calculateTotalPrice(total_price);
 
         await product.save();
 
@@ -112,4 +112,10 @@ const deleteProduct =async (req, res) => {
     }
 }
 
-module.exports ={ getProduct, createProduct, editProduct, deleteProduct, getProductById};
+module.exports ={ 
+    getProduct, 
+    createProduct, 
+    editProduct, 
+    deleteProduct, 
+    getProductById
+};

@@ -14,11 +14,11 @@ module.exports = {
         allowNull: false
       },
       email: {
-        unique: true,
+        type: Sequelize.STRING,
         allowNull: false
       },
       password: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false
       },
       role: {
@@ -30,11 +30,11 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      companyId: {
-        type: Sequelize.INTEGER
-      },
       company_name: {
         type: Sequelize.STRING
+      },
+      companyId: {
+        type: Sequelize.INTEGER
       },
       no_telpon: {
         type: Sequelize.STRING,
