@@ -1,11 +1,11 @@
-const express  = require('express');
+const express = require('express');
 const router = express.Router();
-const {getCattegory, createCattegory, deleteCattegory, updateCattegory} = require('../controllers/cattegoryController');
-
+const { getCattegory, createCattegory, deleteCattegory, updateCattegory } = require('../controllers/cattegoryController');
+const isAdmin = require('../Middleware/userMiddleware');
 
 router.get('/cattegory', getCattegory);
-router.post('/cattegory', createCattegory);
-router.put('/cattegory/:id', updateCattegory);
-router.delete('/cattegory/:id', deleteCattegory);
+router.post('/category', isAdmin, createCattegory);
+router.put('/category/:id', isAdmin, updateCattegory);
+router.delete('/cattegory/:id', isAdmin, deleteCattegory);
 
 module.exports = router;
