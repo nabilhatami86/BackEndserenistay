@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { getUserByToken, register, updateProfile, logout, login } = require('../controllers/userController');
-const isAdmin = require ('../Middleware/userMiddleware.js')
 
 router.get('/user', getUserByToken);
 router.post('/user/register', register);

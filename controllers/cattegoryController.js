@@ -45,8 +45,7 @@ const  updateCattegory = async (req,res)=>{
 
 const deleteCattegory = async(req, res) =>{
     try{
-        const { id } = req.params;
-        const cattegory = await Cattegory.destroy({ where: { id: id}});
+        const cattegory = await Cattegory.destroy({ where: { id: req.params.id } });
         if(!cattegory){
             return res.status(400).json('Id is not valid')
         }
@@ -58,7 +57,7 @@ const deleteCattegory = async(req, res) =>{
     
     }
     
-}
+};
 
 module.exports={ 
     getCattegory, 

@@ -1,6 +1,6 @@
 const { User } = require('../models');
 const bcrypt = require('bcrypt');
-const jsonwebtoken = require('jsonwebtoken');
+const jwt = require('../utils/jwt');
 
 const allowedEmailDomains = /^(gmail\.com)$/;
 
@@ -89,7 +89,7 @@ const register = async (req, res) => {
             message: 'User created',
             datas: {
                 id: newUser.id,
-                name: newUser.username,
+                username: newUser.username,
                 email: newUser.email,
                 role : newUser.role,
                 address : newUser.address,
@@ -127,22 +127,36 @@ const login = async (req, res) => {
             return res.status(403).json({ error: true, message: 'Invalid password' });
         }
 
-        // Generate JWT token
-        const token = jsonwebtoken.sign({ id: user.id }, 'your_secret_key', { expiresIn: '1h' });
+        const tokenjwt = {
+            id:user.id,
+            username:user.username,
+            email: user.email,
+            role: user.role,
+            address: user.password,
+            image: user.image,
+            companyId: user.companyId,
+            company_name: user.company_name,
+            telp: user.no_telpon            
+    }
 
-        res.header('auth-token', token).json({
-            auth: true,
-            token,
+    const token = jwt.creteToken(tokenjwt)
+    return res.status(201).json({
+        error: false,
+        message: 'User created',
+        datas: {
             id: user.id,
             username: user.username,
             email: user.email,
-            address: user.address,
             role : user.role,
-            image : user.image,
+            address : user.address,
+            image: user.image,
             company_name: user.company_name,
             companyId: user.companyId,
-            no_telpon: user.no_telpon
-        });
+            telp: user.no_telpon,
+            token
+        }
+    });
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: true, message: 'Internal Server Error' });

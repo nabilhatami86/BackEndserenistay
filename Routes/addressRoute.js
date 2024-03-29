@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getAddressByToken, createAddress, getAddressById } = require('../controllers/addressController');
+const {  createAddress, getAddressById, editAddress, deleteAddress } = require('../controllers/addressController');
 
 // Router untuk mendapatkan alamat berdasarkan token
-router.get('/address/token', getAddressByToken);
 router.get('/address/:id', getAddressById);
 router.post('/address', createAddress);
+router.put('/address/:id', editAddress);
+router.delete('/address/:id', deleteAddress)
 
 module.exports = router;

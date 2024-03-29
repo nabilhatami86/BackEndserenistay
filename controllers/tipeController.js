@@ -27,26 +27,32 @@ const createTipe = async ( req, res ) => {
     }
 }
 
-const  updateTipe = async (req,res)=>{
-    try{
-        const updateTipe = await Tipe.update({
-            name : req.body.name
-        },{where:{id : req.params.id}})
-        if(updateTipe[0]==0){
-            res.status(404).json({message:"The Tipe with this id does not exist!"})
-        }else{  
-           res.status(200).json({message:"Updated Successfully!",data:updateTipe})  
+const editTipe = async (req, res) => {
+    try {
+        const { name } = req.body;
+
+        const updatedRowCount = await Tipe.update(
+            { name },
+            { where: { id: req.params.id } }
+        );
+
+        if (updatedRowCount[0] === 0) {
+            return res.status(404).json({ message: 'Failed to update tipe.' });
         }
-    }catch(err){
+
+        const editedTipe = await Tipe.findByPk(req.params.id);
+        res.status(200).json(editedTipe);
+    } catch (err) {
         console.log(err);
-        res.status(500).json({message:"Server Error!"});
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-}
+};
+
+
 
 const deleteTipe = async(req, res) =>{
     try{
-        const { id } = req.params;
-        const tipe = await Tipe.destroy({ where: { id: id}});
+        const tipe = await Tipe.destroy({ where: { id: req.params.id } });
         if(!tipe){
             return res.status(400).json('Id is not valid')
         }
@@ -63,6 +69,6 @@ const deleteTipe = async(req, res) =>{
 module.exports = {
     getTipe,
     createTipe,
-    updateTipe,
+    editTipe,
     deleteTipe
 }

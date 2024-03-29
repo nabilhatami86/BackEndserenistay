@@ -8,7 +8,7 @@ app.use('', require('./Routes/ProductRoute'));
 app.use('', require( './Routes/cattegoryRoute' ));
 app.use('', require( './Routes/userRoute'));
 app.use('', require( './Routes/tipeRoute'));
-app.use('', require ( './Routes/addressRoute.js')); 
+app.use('', require ( './Routes/addressRoute')); 
 
 
 const PORT = process.env.PORT || 3000;

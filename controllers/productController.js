@@ -1,12 +1,13 @@
-const multer = require ('multer');
-const {Product, Cattegory, Tipe} = require ('../models')
+const { where } = require('sequelize');
+const {Product, Cattegory, Tipe, User, Address} = require ('../models')
 
-const getProduct =  async (req, res) =>{
+const getProduct =  async (req, res,) =>{
     try{
         const product = await Product.findAll({
             include: [
                 {model: Cattegory,vattributes: ["name"]},
-                {model: Tipe,vattributes: ["name"]}
+                {model: Tipe,vattributes: ["name"]},
+                {model: Address,vattributes: ["negara", "provinsi", "kota", "kecamatan","desa","nama_jalan"]}
             ]
         });
         
@@ -19,8 +20,13 @@ const getProduct =  async (req, res) =>{
 
 const getProductById = async (req, res) => {
     try {
-        const { id } = req.params;
-        const product = await Product.findByPk(id, { include: {model:Cattegory,attributes:["name"]} });
+        const product = await Product.findByPk(req.params.id, { 
+            include: [
+                {model: Cattegory,vattributes: ["name"]},
+                {model: Tipe,vattributes: ["name"]},
+                {model: Address,vattributes: ["negara", "provinsi", "kota", "kecamatan","desa","nama_jalan"]}
+            ]
+        });
 
         if (!product) {
             return res.status(404).json({ error: 'The product does not exist' });
@@ -35,21 +41,30 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) =>{
     try{
-        const { name, description, price, addressId, roomId, discount, tipeId,categoryId,userId,image } = req.body;
+        const { name, description, price, addressId, roomId, discount, tipeId,categoryId,image} = req.body;
 
-        const newProduct = await Product.create({
-            name,
-            description,
-            price,
-            addressId,
-            roomId,
-            discount,
-            tipeId,
-            categoryId,
-            userId,
-            image
-        });
-        res.status(201).json(newProduct);
+
+        const newUser = await User.findByPk(req.user.id);
+        if (newUser.role=== 'admin'){
+            const newProduct = await Product.create({
+                name,
+                description,
+                price,
+                addressId,
+                roomId,
+                discount,
+                tipeId,
+                categoryId,
+                userId: req.user.id,
+                image,
+                total_price:  price * (1 - discount/100),
+            });
+            res.status(201).json(newProduct);
+
+        }else{
+            res.status (400).json ({message: 'Invalid role user'})
+        }
+
     } catch(err){
         console.log(err);
 
@@ -58,52 +73,50 @@ const createProduct = async (req, res) =>{
 
 const editProduct = async (req, res) => {
     try{
-        const { id } = req.params;
-        const { name, description, price, addressId, roomId, discount, tipeId, categoryId, total_price } = req.body;
+        
+        const { name, description, price, addressId, roomId, discount, tipeId, categoryId, image } = req.body;
+        
+        const newUser = await User.findByPk(req.user.id);
+        if (newUser.role=== 'admin'){
 
-        console.log("Product ID:", id);
-        let product = await Product.findByPk(id);
-        console.log("Product:", product);
-        if (!Product) {
-            return res.status(400).json("produk not found");
-        }
+        const editProduct = await Product.update({
+                name,
+                description,
+                price,
+                addressId,
+                roomId,
+                discount,
+                tipeId,
+                categoryId,
+                image,
+                total_price: price * (1- discount/100)
+            },
+            {where: {id:req.params.id}});
 
-        product.name = name || product.name;
-        product.description = description || product.description;
-        product.price = price || product.price;
-        product.addressId = addressId || product.addressId;
-        product.roomId = roomId || product.roomId;
-        product.discount = ValidateDiscount (discount) ? discount : product.discount;
-        product.tipeId = tipeId || product.tipeId;
-        product.categoryId = categoryId || product.categoryId;
-        product.total_price = calculateTotalPrice(total_price);
-
-        await product.save();
-
-        res.status(200).json(product);
+            res.status(201).json(editProduct);
+        } else {
+            res.status(401).send({ message: "You are not admin" })
+        } 
     } catch (err){
         console.log(err);
         res.status(404).json('error editing product');
     }
 }
 
-const ValidateDiscount =(discount) => {
-    return Number.isInteger(discount) && discount >= 0 && discount <= 100;
-}
-
-const calculateTotalPrice = (product) => {
-    const discountPrice = product.price * ((100 - product.discount) / 100);
-    return discountPrice;
-}
 
 const deleteProduct =async (req, res) => {
     try{
-        const { id } = req.params;
-        const product = await Product.destroy({ where: { id: id}});
+        const newUser = await User.findByPk(req.user.id);
+        if (newUser.role=== 'admin'){
+        const product = await Product.destroy({ where: { id: req.params.id}});
         if(!product){
             return res.status(400).json('Id is not valid')
         }
         res.status(200).json({message: 'delete success'})
+        
+        } else {
+            res.status(401).send({ message: "You are not admin" })
+        } 
         
     }catch(err){
         console.log(err);   
