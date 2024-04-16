@@ -9,6 +9,8 @@ app.use('', require( './Routes/cattegoryRoute' ));
 app.use('', require( './Routes/userRoute'));
 app.use('', require( './Routes/tipeRoute'));
 app.use('', require ( './Routes/addressRoute')); 
+app.use('', require( './Routes/cartRoute'));
+app.use('', require( './Routes/fasilitasRoute'));
 
 
 const PORT = process.env.PORT || 3000;

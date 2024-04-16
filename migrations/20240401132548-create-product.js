@@ -15,42 +15,56 @@ module.exports = {
       },
       description: {
         type: Sequelize.STRING,
-        allowNull: false
+        
       },
       price: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false
       },
-      addressId: {
-        type: Sequelize.INTEGER,
+      luas_ruangan: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      roomId: {
-        type: Sequelize.INTEGER,
+      status: {
+        type: Sequelize.ENUM(['tersedia', 'tersewa','dibooking']),
         allowNull: false
       },
-      tipeId: {
-        type: Sequelize.INTEGER,
+      image: {
+        type: Sequelize.STRING,
         allowNull: false
+      },
+      tipe_kos: {
+        type : Sequelize.ENUM(['Cowok','Cewek','Campur']),
+        allowNull: false
+      },
+      tipe_ruangan: {
+        type: Sequelize.ENUM(['Single', 'Double', 'Suite', 'Shared']),
+        allowNull: false
+
       },
       discount: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
+      },
+      total_price: {
+        type: Sequelize.STRING
+      },
+      fasilitasId: {
+        type: Sequelize.STRING,
         allowNull: false
       },
       categoryId: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      userId:{
-        type : Sequelize.INTEGER,
-        allowNull: false
-      },
-      total_price:{
+      userId: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      image:{
-        type:Sequelize.STRING,
+      tipeId: {
+        type: Sequelize.INTEGER
+      },
+      addressId: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       createdAt: {

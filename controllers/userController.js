@@ -35,7 +35,6 @@ const register = async (req, res) => {
         const { username, email, password, role, address,image ,company_name, companyId, no_telpon } = req.body;
         const emailDomain = email.split('@')[1];
 
-        // Validate email domain
         if (!allowedEmailDomains.test(emailDomain)) {
             return res.status(400).json({
                 error: true,
@@ -43,7 +42,7 @@ const register = async (req, res) => {
             });
         }
 
-        // Validate role
+
         const validRoles = ['admin', 'user', 'guest'];
         if (!validRoles.includes(role)) {
             return res.status(400).json({
@@ -52,7 +51,6 @@ const register = async (req, res) => {
             });
         }
 
-        // Validate phone number format
         const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
         console.log(no_telpon)
         if (!phoneRegex.test(no_telpon)) {
@@ -62,16 +60,13 @@ const register = async (req, res) => {
             });
         }
 
-        // Hash password
         const hashPassword = await bcrypt.hash(password, 8);
 
-        // Check if user with the same email already exists
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({ error: true, message: 'Email already exists' });
         }
 
-        // Create new user
         const newUser = await User.create({
             username,
             email,
@@ -109,19 +104,16 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Checking if data is provided
         if (!email || !password) {
             return res.status(400).json({ error: true, message: 'Please fill all the fields' });
         }
 
-        // Find user by email
         const user = await User.findOne({ where: { email } });
         
         if (!user) {
             return res.status(403).json({ error: true, message: 'Email is incorrect' });
         }
 
-        // Check if the password is correct
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
             return res.status(403).json({ error: true, message: 'Invalid password' });
@@ -199,10 +191,8 @@ const updateProfile = async (req, res) => {
             user.decription = decription;
         }
 
-        // Save the updated user
         await user.save();
 
-        // Return success response
         return res.status(200).json({ error: false, message: 'Profile updated successfully', user });
     } catch (error) {
         console.error(error);
@@ -224,16 +214,12 @@ const deleteUser = async (req, res) => {
     try {
         const userId = req.params.id;
 
-        // Cek apakah user yang akan dihapus ditemukan
         const user = await User.findByPk(userId);
         if (!user) {
             return res.status(404).json({ error: true, message: 'User not found' });
         }
-
-        // Hapus user
         await User.destroy({ where: { id: userId } });
 
-        // Kirim respons berhasil
         return res.status(200).json({ error: false, message: 'User deleted successfully' });
     } catch (error) {
         console.error(error);

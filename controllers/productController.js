@@ -1,17 +1,66 @@
-const { where } = require('sequelize');
-const {Product, Cattegory, Tipe, User, Address} = require ('../models')
+const { where, NUMBER } = require('sequelize');
+const {Product, Cattegory, Tipe, User, Address, Fasilitas} = require ('../models')
+
+
 
 const getProduct =  async (req, res,) =>{
     try{
         const product = await Product.findAll({
             include: [
-                {model: Cattegory,vattributes: ["name"]},
-                {model: Tipe,vattributes: ["name"]},
+                {model: Cattegory,vattributes: ["name" ]},
+                // {model: Tipe,vattributes: ["name"]},
                 {model: Address,vattributes: ["negara", "provinsi", "kota", "kecamatan","desa","nama_jalan"]}
             ]
         });
         
-        res.status(200).json(product);
+        let dataProduct = [];
+        let fasilitas = [];
+
+        for (const element of product) {
+            const fasilitasId = element.fasilitasId.split(",")
+
+            for ( const isi of fasilitasId) {
+                const fasilitasId = await Fasilitas.findByPk(Number(isi))
+                console.log(fasilitasId)
+
+                fasilitas.push(fasilitasId.fasilitas);
+
+                const data ={
+                    id: element.id,
+                    name: element.name,
+                    description: element.description,
+                    price: element.price,
+                    image : element.image,
+                    category: element.Cattegory.name,
+                    luas_ruangan: element.luas_ruangan,
+                    status: element.status,
+                    discount: element.discount,
+                    total_price: element.total_price,
+                    userId: element.userId,
+                    addressId: element.addressId,
+                    fasilitas
+    
+                }
+    
+              dataProduct.push(data)
+            }
+
+            
+            
+
+            // for (const idArray of dataIdFasilitas) {
+            //     const dataFasilitas = await Fasilitas.findByPk(Number(idArray));
+            //     fasilitas.push(dataFasilitas);
+            // }
+
+            // const data = {
+            //     element
+            // };
+            // console.log(data)
+            // dataProduct.push(data); 
+        }
+        // console.log(dataProduct)
+        res.status(200).json(dataProduct);
     }catch(err){
         console.log(err);
         res.status(400).json('Error getting products');
@@ -23,9 +72,11 @@ const getProductById = async (req, res) => {
         const product = await Product.findByPk(req.params.id, { 
             include: [
                 {model: Cattegory,vattributes: ["name"]},
-                {model: Tipe,vattributes: ["name"]},
+                // {model: Fasilitas,vattributes: ["fasilitas"]},
+                // {model: Tipe,vattributes: ["name"]},
                 {model: Address,vattributes: ["negara", "provinsi", "kota", "kecamatan","desa","nama_jalan"]}
-            ]
+            ],
+            attributes: { exclude: ["createdAt", "updatedAt"] }
         });
 
         if (!product) {
@@ -41,7 +92,9 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) =>{
     try{
-        const { name, description, price, addressId, roomId, discount, tipeId,categoryId,image} = req.body;
+        const { name, description, price, addressId, fasilitasId, discount, tipeId,categoryId,image, luas_ruangan, tipe_kos, tipe_ruangan, status} = req.body;
+        
+        const total_price = Number(price) * (1 - discount/100)
 
 
         const newUser = await User.findByPk(req.user.id);
@@ -49,15 +102,19 @@ const createProduct = async (req, res) =>{
             const newProduct = await Product.create({
                 name,
                 description,
-                price,
+                price: price.toString(),
+                image,
+                luas_ruangan,
+                tipe_kos,
+                tipe_ruangan,
+                status,
                 addressId,
-                roomId,
+                fasilitasId,
                 discount,
                 tipeId,
                 categoryId,
                 userId: req.user.id,
-                image,
-                total_price:  price * (1 - discount/100),
+                total_price:  total_price.toString()
             });
             res.status(201).json(newProduct);
 
@@ -74,8 +131,9 @@ const createProduct = async (req, res) =>{
 const editProduct = async (req, res) => {
     try{
         
-        const { name, description, price, addressId, roomId, discount, tipeId, categoryId, image } = req.body;
+        const { name, description, price, addressId, fasilitasId, discount, tipeId, categoryId, image, tipe_kos, tipe_ruangan, status, luas_ruangan } = req.body;
         
+        const total_price = Number(price) * (1- discount/100)
         const newUser = await User.findByPk(req.user.id);
         if (newUser.role=== 'admin'){
 
@@ -83,13 +141,17 @@ const editProduct = async (req, res) => {
                 name,
                 description,
                 price,
+                image,
+                luas_ruangan,
+                tipe_kos,
+                tipe_ruangan,
+                status,
                 addressId,
-                roomId,
+                fasilitasId,
                 discount,
                 tipeId,
                 categoryId,
-                image,
-                total_price: price * (1- discount/100)
+                total_price: total_price.toString()
             },
             {where: {id:req.params.id}});
 
