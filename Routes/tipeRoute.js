@@ -1,6 +1,6 @@
 const express = require ('express')
 const router = express.Router();
-const {getTipe, createTipe, updateTipe, deleteTipe, editTipe,} = require ('../controllers/tipeController.js');
+const {getTipe, createTipe, deleteTipe, editTipe,} = require ('../controllers/tipeController.js');
 const isAdmin = require ('../Middleware/middleware-authorization.js')
 
 router.get('/tipe', getTipe);

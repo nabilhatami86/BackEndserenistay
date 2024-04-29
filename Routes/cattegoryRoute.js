@@ -5,8 +5,8 @@ const isAdmin = require ('../Middleware/middleware-authorization')
 
 
 router.get('/cattegory', getCattegory);
-router.post('/category',  createCattegory);
-router.put('/category/:id',  updateCattegory);
-router.delete('/cattegory/:id',  deleteCattegory);
+router.post('/category',  isAdmin,createCattegory);
+router.put('/category/:id',  isAdmin,updateCattegory);
+router.delete('/cattegory/:id',  isAdmin,deleteCattegory);
 
 module.exports = router;
